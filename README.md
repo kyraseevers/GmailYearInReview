@@ -1,5 +1,5 @@
 # Gmail Year In Review
 
-Overview
+# Overview
 
 Using the Gmail APIs to create a year in review
