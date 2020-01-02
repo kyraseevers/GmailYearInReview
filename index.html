@@ -66,9 +66,12 @@
         if (isSignedIn) {
           authorizeButton.style.display = 'none';
           signoutButton.style.display = 'block';
-          //listMessages();
-	  listAllPages();
-	  //listHistory('me', '?q=in:sent after:1388552400 before:1391230800', ()=>{console.log("an error occurred");});
+	  listAllPages('in:inbox after:2019/01/01 before:2020/01/01', (result)=>{
+              appendPre('Emails: ');
+              if(result && result.length > 0){
+                appendPre("You receieved "+result.length+" emails this year!");
+              }
+          });
         } else {
           authorizeButton.style.display = 'block';
           signoutButton.style.display = 'none';
@@ -155,7 +158,7 @@
         getPageOfHistory(request, []);
       }	 
 
-      function listAllPages(){
+      function listAllPages(query, callback){
 	var getPageOfMessages = function(request, result){
 	  request.execute(function(response){
 	    result = result.concat(response.messages);
@@ -164,26 +167,19 @@
 		request = gapi.client.gmail.users.messages.list({
 		  'userId': 'me',
 		  'pageToken': nextPageToken,
-		  'q': 'in:inbox after:2019/01/01 before:2020/01/01'
+		  'q': query
 		});
 		getPageOfMessages(request, result);
 	    } else {
-	      appendPre('Emails: ');
-	      if(result && result.length > 0){
-		/*for(i=0; i<result.length; i++){
-		  var message = result[i];
-		  appendPre(message.id);
-		}*/
-		appendPre("You receieved "+result.length+" emails this year!");
-	      }
+	      callback(result);
 	    }
 	  });
 	}
 	var initialRequest = gapi.client.gmail.users.messages.list({
           'userId': 'me',
-          'q': 'in:inbox after:2019/01/01 before:2020/01/01'
+          'q': query
         });
-	appendPre('Loading ..');
+	appendPre('Loading ...');
         getPageOfMessages(initialRequest, []);
       }
 
